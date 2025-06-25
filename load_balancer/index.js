@@ -29,9 +29,15 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Retry forwarding with failover
+// async function forwardRequestWithRetry(req, res, tried = new Set(), attempt = 1) {
+//   const requestId = req.headers['x-request-id'] || `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+//   req.headers['x-request-id'] = requestId;
 async function forwardRequestWithRetry(req, res, tried = new Set(), attempt = 1) {
-  const requestId = req.headers['x-request-id'] || `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const requestId = req.headers['x-request-id'] || uuidv4();
+  const clientId = req.headers['x-client-id'] || uuidv4();
+
   req.headers['x-request-id'] = requestId;
+  req.headers['x-client-id'] = clientId; 
 
   const server = selectServer(req, SERVERS, tried);
 

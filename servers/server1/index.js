@@ -9,7 +9,8 @@ const PORT = process.env.PORT || 3001; // Change to 3002 for server2, 3003 for s
 app.use(express.json());
 app.use(cors());
 
-const messagesFile = path.join(__dirname, 'messages.json');
+// const messagesFile = path.join(__dirname, 'messages.json');
+const messagesFile = path.join('/tmp', 'messages.json');
 
 // Basic root
 app.get('/', (req, res) => {
