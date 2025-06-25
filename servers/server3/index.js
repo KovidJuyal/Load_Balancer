@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.send('OK');
 });
-
 app.post('/api/contact', (req, res) => {
   const { name, message } = req.body;
 
@@ -30,17 +29,19 @@ app.post('/api/contact', (req, res) => {
 
   const entry = { name, message, timestamp: new Date().toISOString() };
 
-  let all = [];
-  if (fs.existsSync(messagesFile)) {
-    all = JSON.parse(fs.readFileSync(messagesFile));
+  try {
+    let all = [];
+    if (fs.existsSync(messagesFile)) {
+      const data = fs.readFileSync(messagesFile, 'utf8');
+      all = JSON.parse(data);
+    }
+    all.push(entry);
+    fs.writeFileSync(messagesFile, JSON.stringify(all, null, 2));
+
+    console.log(`📥 Contact form received: ${name} - ${message}`);
+    res.send('Response from Server 3');
+  } catch (err) {
+    console.error('❌ Error writing to messages file:', err);
+    res.status(500).send('Server error while saving message');
   }
-  all.push(entry);
-  fs.writeFileSync(messagesFile, JSON.stringify(all, null, 2));
-
-  console.log(`📥 Contact form received: ${name} - ${message}`);
-  res.send('Response from Server 3'); // Change per server
-});
-
-app.listen(process.env.PORT || 3003, '0.0.0.0', () => {
-  console.log(`✅✅ Server 3 running on port ${process.env.PORT || 3003}`);
 });
