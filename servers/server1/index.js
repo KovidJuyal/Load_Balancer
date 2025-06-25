@@ -1,16 +1,14 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001; // Change to 3002 for server2, 3003 for server3
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors());
 
-// const messagesFile = path.join(__dirname, 'messages.json');
-const messagesFile = path.join('/tmp', 'messages.json');
+// In-memory storage instead of file system
+let messages = [];
 
 // Basic root
 app.get('/', (req, res) => {
@@ -19,7 +17,12 @@ app.get('/', (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-  res.send('OK');
+  res.json({ 
+    status: 'OK', 
+    server: 'server1',
+    timestamp: new Date().toISOString(),
+    messageCount: messages.length 
+  });
 });
 
 // Contact POST route
@@ -27,43 +30,61 @@ app.post('/api/contact', (req, res) => {
   try {
     const { name, message } = req.body;
 
-    if (!name || !message) {
-      return res.status(400).send('Invalid input: Name and message required.');
+    // Validate input
+    if (!name || !message || typeof name !== 'string' || typeof message !== 'string') {
+      return res.status(400).json({ 
+        error: 'Invalid input: Name and message are required and must be strings.' 
+      });
     }
 
-    const entry = { name, message, timestamp: new Date().toISOString() };
-    let all = [];
-
-    // Safely read and parse the file
-    if (fs.existsSync(messagesFile)) {
-      try {
-        const content = fs.readFileSync(messagesFile, 'utf-8');
-        all = JSON.parse(content);
-        if (!Array.isArray(all)) all = [];
-      } catch (err) {
-        console.error('⚠️ Failed to parse messages.json. Resetting file.', err);
-        all = [];
-      }
+    // Prevent memory overflow
+    if (messages.length > 1000) {
+      messages = messages.slice(-500); // Keep last 500 messages
     }
 
-    all.push(entry);
+    const entry = { 
+      id: Date.now() + Math.random().toString(36).slice(2),
+      name: name.trim(), 
+      message: message.trim(), 
+      timestamp: new Date().toISOString(),
+      server: 'server1' // Change for each server
+    };
 
-    // Safely write the file
-    try {
-      fs.writeFileSync(messagesFile, JSON.stringify(all, null, 2));
-    } catch (err) {
-      console.error('❌ Error writing to messages.json:', err);
-      return res.status(500).send('Could not store message');
-    }
+    messages.push(entry);
 
-    console.log(`📥 Contact form received: ${name} - ${message}`);
-    res.send('Response from Server 1'); // Change per server
+    console.log(`📥 Contact form received from ${name}: ${message.slice(0, 50)}...`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Message received successfully',
+      server: 'server1',
+      id: entry.id
+    });
+
   } catch (err) {
     console.error('🚨 Unexpected server error in /api/contact:', err);
-    res.status(500).send('Server error');
+    res.status(500).json({ 
+      error: 'Internal server error',
+      server: 'server1' 
+    });
   }
 });
 
+// Get messages endpoint (optional)
+app.get('/api/messages', (req, res) => {
+  res.json({
+    messages: messages.slice(-10), // Last 10 messages
+    total: messages.length,
+    server: 'server1'
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ Server 1 running on port ${PORT}`);
 });
