@@ -8,7 +8,10 @@ const virtualNodeCount = 100;
  * Hash a value to a 32-bit unsigned int
  */
 function hash(value) {
-  return parseInt(crypto.createHash('md5').update(value).digest('hex').substring(0, 8), 16);
+  return parseInt(
+    crypto.createHash('md5').update(value).digest('hex').substring(0, 8),
+    16
+  );
 }
 
 /**
@@ -26,7 +29,7 @@ function setupHashRing(servers) {
 }
 
 /**
- * Select the next server clockwise on the hash ring
+ * Get the next server clockwise on the hash ring
  */
 function getNextServer(clientId) {
   const clientHash = hash(clientId);
@@ -37,18 +40,19 @@ function getNextServer(clientId) {
 }
 
 /**
- * Filter healthy servers only
+ * Return only healthy servers
  */
 function getHealthyServers(servers) {
   return servers.filter(s => s.healthy);
 }
 
 /**
- * Select a server using consistent hashing, skipping tried servers
+ * Select server via consistent hashing
  */
 function consistentHashing(clientId, healthyServers, tried = new Set()) {
   setupHashRing(healthyServers);
   let server = getNextServer(clientId);
+
   if (!server || tried.has(server.url)) {
     for (let vnode of virtualNodes) {
       if (!tried.has(vnode.server.url)) {
@@ -61,11 +65,10 @@ function consistentHashing(clientId, healthyServers, tried = new Set()) {
 }
 
 /**
- * Dispatcher to select algorithm dynamically
+ * Final server selection based on algorithm
  */
 function selectServer(req, servers, tried = new Set()) {
   const algo = process.env.LOAD_BALANCING_ALGO || 'consistent_hashing';
-
   const healthy = getHealthyServers(servers);
 
   if (algo === 'waterfall_by_location') {
@@ -73,13 +76,13 @@ function selectServer(req, servers, tried = new Set()) {
     return waterfallByLocation.selectServer(location, healthy, tried);
   }
 
-  // Default to consistent hashing
-  const clientId = req.headers['x-client-id'] || 'default';
+  // Default: consistent hashing
+  const clientId = req.headers['x-client-id'] || 'default-' + Date.now();
   return consistentHashing(clientId, healthy, tried);
 }
 
 module.exports = {
   getHealthyServers,
   selectServer,
-  hash
+  hash,
 };

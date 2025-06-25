@@ -1,24 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <link rel="stylesheet" href="style.css" />
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submit Form</title>
-</head>
-<body>
-  <h2>Contact Form</h2>
-  <form id="contact-form">
-    <label>Name: <input type="text" name="name" required></label><br>
-    <label>Message: <textarea name="message" required></textarea></label><br>
-    <button type="submit">Submit</button>
-  </form>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit Form</title>
+  </head>
+  <body>
+    <h2>Contact Form</h2>
+    <form id="contact-form">
+      <label>Name: <input type="text" name="name" required /></label><br />
+      <label>Message: <textarea name="message" required></textarea></label
+      ><br />
+      <button type="submit">Submit</button>
+    </form>
 
-  <p id="response"></p>
+    <p id="response"></p>
 
-  <script>
+    <script>
   const form = document.getElementById('contact-form');
   const responsePara = document.getElementById('response');
+
+  // Generate a stable client ID for session stickiness
+  const clientId = 'client-' + Math.random().toString(36).slice(2);
 
   form.onsubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +34,10 @@
     try {
       const res = await fetch('https://load-balancer-efb4.onrender.com/api/contact', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': clientId
+        },
         body: JSON.stringify(formData)
       });
 
@@ -44,5 +51,5 @@
   };
 </script>
 
-</body>
+  </body>
 </html>
