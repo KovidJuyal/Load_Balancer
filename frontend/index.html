@@ -17,31 +17,32 @@
   <p id="response"></p>
 
   <script>
-    const form = document.getElementById('contact-form');
-    const responsePara = document.getElementById('response');
+  const form = document.getElementById('contact-form');
+  const responsePara = document.getElementById('response');
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const formData = {
-        name: form.name.value,
-        message: form.message.value
-      };
-
-      try {
-        const res = await fetch('https://load-balancer-efb4.onrender.com/api/contact', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(formData)
-        });
-
-        const text = await res.text();
-        responsePara.textContent = `✅ Server responded: ${text}`;
-        responsePara.style.color = 'green';
-      } catch (err) {
-        responsePara.textContent = '❌ Error: Failed to send';
-        responsePara.style.color = 'red';
-      }
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = {
+      name: form.name.value,
+      message: form.message.value
     };
-  </script>
+
+    try {
+      const res = await fetch('https://load-balancer-efb4.onrender.com/api/contact', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+      });
+
+      const text = await res.text();
+      responsePara.textContent = `✅ Server responded: ${text}`;
+      responsePara.style.color = 'green';
+    } catch (err) {
+      responsePara.textContent = '❌ Error: Failed to send';
+      responsePara.style.color = 'red';
+    }
+  };
+</script>
+
 </body>
 </html>
