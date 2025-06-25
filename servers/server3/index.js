@@ -41,6 +41,6 @@ app.post('/api/contact', (req, res) => {
   res.send('Response from Server 3'); // Change per server
 });
 
-app.listen(PORT, () => {
-  console.log(`✅✅ Server 3 running on port ${PORT}`); // Change per server
+app.listen(process.env.PORT || 3003, '0.0.0.0', () => {
+  console.log(`✅✅ Server 3 running on port ${process.env.PORT || 3003}`);
 });
