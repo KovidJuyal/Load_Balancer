@@ -9,40 +9,39 @@
 <body>
   <h2>Contact Form</h2>
   <form id="contact-form">
-  <label>Name: <input type="text" name="name" required></label><br>
-  <label>Message: <textarea name="message" required></textarea></label><br>
-  <button type="submit">Submit</button>
-</form>
+    <label>Name: <input type="text" name="name" required></label><br>
+    <label>Message: <textarea name="message" required></textarea></label><br>
+    <button type="submit">Submit</button>
+  </form>
 
-<p id="response"></p>
+  <p id="response"></p>
 
-<script>
-  const form = document.getElementById('contact-form');
-  const responsePara = document.getElementById('response');
+  <script>
+    const form = document.getElementById('contact-form');
+    const responsePara = document.getElementById('response');
 
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const formData = {
-      name: form.name.value,
-      message: form.message.value
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = {
+        name: form.name.value,
+        message: form.message.value
+      };
+
+      try {
+        const res = await fetch('https://load-balancer-efb4.onrender.com/api/contact', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(formData)
+        });
+
+        const text = await res.text();
+        responsePara.textContent = `✅ Server responded: ${text}`;
+        responsePara.style.color = 'green';
+      } catch (err) {
+        responsePara.textContent = '❌ Error: Failed to send';
+        responsePara.style.color = 'red';
+      }
     };
-
-    try {
-      const res = await fetch('https://load-balancer-efb4.onrender.com', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData)
-      });
-
-      const text = await res.text();
-      responsePara.textContent = `✅ Server responded: ${text}`;
-      responsePara.style.color = 'green';
-    } catch (err) {
-      responsePara.textContent = '❌ Error: Failed to send';
-      responsePara.style.color = 'red';
-    }
-  };
-</script>
-
+  </script>
 </body>
 </html>
