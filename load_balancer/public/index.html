@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Load Balancer Test</title>
+</head>
+<body>
+  <h2>Test Load Balancer</h2>
+  <form id="clientForm">
+    <label>Client ID: <input type="text" name="clientId" /></label><br />
+    <label>Client Location: 
+      <select name="clientLocation">
+        <option value="in">India</option>
+        <option value="us">USA</option>
+        <option value="eu">Europe</option>
+      </select>
+    </label><br />
+    <button type="submit">Send Request</button>
+  </form>
+
+  <div id="response"></div>
+
+  <script>
+    const form = document.getElementById('clientForm');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const headers = {
+        'x-client-id': formData.get('clientId'),
+        'x-client-location': formData.get('clientLocation'),
+      };
+
+      const res = await fetch('/api/', {
+        method: 'GET',
+        headers,
+      });
+
+      const text = await res.text();
+      document.getElementById('response').innerText = text;
+    });
+  </script>
+</body>
+</html>

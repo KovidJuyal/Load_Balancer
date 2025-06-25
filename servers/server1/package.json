@@ -1,15 +1,16 @@
 {
   "name": "server1",
   "version": "1.0.0",
+  "description": "Express backend server 1 for load balancer demo",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Kovid Kumar Juyal",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
   }
 }
