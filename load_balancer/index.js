@@ -14,9 +14,9 @@ app.use(cors());
 const PORT = process.env.PORT || 5000;
 
 const SERVERS = [
-  { url: 'https://server1.onrender.com', healthy: true, region: 'in' },
-  { url: 'https://server2.onrender.com', healthy: true, region: 'us' },
-  { url: 'https://server3.onrender.com', healthy: true, region: 'eu' },
+  { url: 'https://server1-sq0g.onrender.com', healthy: true, region: 'in' },
+  { url: 'https://server2-o3b8.onrender.com', healthy: true, region: 'us' },
+  { url: 'https://server3-ctv3.onrender.com', healthy: true, region: 'eu' },
 ];
 
 const HEALTH_CHECK_INTERVAL = 5000; // ms
