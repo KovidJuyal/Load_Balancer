@@ -4,44 +4,65 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3003; // server1
-// For server2 use 3002, server3 use 3003 as fallback
- // Change this to 3002, 3003 accordingly
+const PORT = process.env.PORT || 3003; // Change to 3002 for server2, 3003 for server3
 
 app.use(express.json());
 app.use(cors());
 
 const messagesFile = path.join(__dirname, 'messages.json');
 
+// Basic root
 app.get('/', (req, res) => {
-  res.send('Response from Server 3'); // Change for 2, 3 accordingly
+  res.send('Response from Server 3'); // Change for each server
 });
 
+// Health check
 app.get('/health', (req, res) => {
   res.send('OK');
 });
+
+// Contact POST route
 app.post('/api/contact', (req, res) => {
-  const { name, message } = req.body;
-
-  if (!name || !message) {
-    return res.status(400).send('Invalid input');
-  }
-
-  const entry = { name, message, timestamp: new Date().toISOString() };
-
   try {
-    let all = [];
-    if (fs.existsSync(messagesFile)) {
-      const data = fs.readFileSync(messagesFile, 'utf8');
-      all = JSON.parse(data);
+    const { name, message } = req.body;
+
+    if (!name || !message) {
+      return res.status(400).send('Invalid input: Name and message required.');
     }
+
+    const entry = { name, message, timestamp: new Date().toISOString() };
+    let all = [];
+
+    // Safely read and parse the file
+    if (fs.existsSync(messagesFile)) {
+      try {
+        const content = fs.readFileSync(messagesFile, 'utf-8');
+        all = JSON.parse(content);
+        if (!Array.isArray(all)) all = [];
+      } catch (err) {
+        console.error('⚠️ Failed to parse messages.json. Resetting file.', err);
+        all = [];
+      }
+    }
+
     all.push(entry);
-    fs.writeFileSync(messagesFile, JSON.stringify(all, null, 2));
+
+    // Safely write the file
+    try {
+      fs.writeFileSync(messagesFile, JSON.stringify(all, null, 2));
+    } catch (err) {
+      console.error('❌ Error writing to messages.json:', err);
+      return res.status(500).send('Could not store message');
+    }
 
     console.log(`📥 Contact form received: ${name} - ${message}`);
-    res.send('Response from Server 3');
+    res.send('Response from Server 3'); // Change per server
   } catch (err) {
-    console.error('❌ Error writing to messages file:', err);
-    res.status(500).send('Server error while saving message');
+    console.error('🚨 Unexpected server error in /api/contact:', err);
+    res.status(500).send('Server error');
   }
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
