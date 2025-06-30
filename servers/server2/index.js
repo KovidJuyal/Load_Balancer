@@ -70,14 +70,14 @@ app.post('/api/contact', (req, res) => {
   }
 });
 
-// Get messages endpoint (optional)
-app.get('/api/messages', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
-    messages: messages.slice(-10), // Last 10 messages
-    total: messages.length,
-    server: 'server2'
+    status: "OK",
+    server: "server2",
+    timestamp: new Date().toISOString(),
   });
 });
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
