@@ -145,7 +145,7 @@ app.get('/health', (req, res) => {
 async function checkServerHealth(server) {
   try {
     const response = await axios.get(`${server.url}/health`, { 
-      timeout: 5000,
+      timeout: 15000,
       validateStatus: (status) => status === 200
     });
     

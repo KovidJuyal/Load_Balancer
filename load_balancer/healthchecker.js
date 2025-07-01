@@ -11,10 +11,14 @@ function start(servers, interval = 5000) {
   setInterval(async () => {
     for (const server of servers) {
       try {
-        const response = await axios.get(`${server.url}/health`, { timeout: 1000 });
-        const isHealthy = response.status >= 200 && response.status < 300;
+        const response = await axios.get(`${server.url}/health`, {
+          timeout: 1000,
+          validateStatus: (status) => status >= 200 && status < 300 // ✅ Accept all 2xx responses
+        });
 
-        if (!server.alive && isHealthy) {
+        const isHealthy = true;
+
+        if (!server.alive) {
           console.log(`🟢 ${server.url} is back online.`);
         }
 
