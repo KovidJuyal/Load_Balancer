@@ -5,7 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const dotenv = require('dotenv');
-const { selectServer, getHealthyServers } = require('./utils/loadBalancerCore');
+const { selectServer, getHealthyServers } = require('./utils/loadBalancerCore.js');
 
 dotenv.config();
 const app = express();
