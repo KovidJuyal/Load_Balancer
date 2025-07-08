@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: load-balancer
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: .
+    plan: free
+    envVars:
+      - key: LOAD_BALANCING_ALGO
+        value: consistent_hashing

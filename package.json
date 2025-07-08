@@ -1,5 +1,18 @@
 {
+  "name": "load-balancer-root",
+  "version": "1.0.0",
+  "description": "Root controller for load balancer project",
+  "main": "load_balancer/index.js",
+  "scripts": {
+    "start": "node load_balancer/index.js"
+  },
   "dependencies": {
-    "axios": "^1.10.0"
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.0"
   }
 }
