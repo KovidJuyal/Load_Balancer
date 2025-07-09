@@ -155,7 +155,7 @@
 
     async function fetchServerHealth() {
       try {
-        const res = await fetch('/health');
+        const res = await fetch(`${API_BASE}/health`);
         const data = await res.json();
 
         serverTableBody.innerHTML = '';
@@ -186,6 +186,7 @@
       showMessage('Sending request...', 'loading');
 
       try {
+        const API_BASE = 'https://load-balancer-efb4.onrender.com';
         const res = await fetch('/api/contact', {
           method: 'POST',
           headers: {
